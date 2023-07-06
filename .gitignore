@@ -49,4 +49,3 @@ typings/
 
 # Rollup
 .rollup.cache
-dist

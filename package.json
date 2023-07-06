@@ -13,7 +13,6 @@
   },
   "scripts": {
     "build": "rollup -c rollup.config.ts --configPlugin @rollup/plugin-typescript",
-    "release": "np",
     "size": "size-limit",
     "test:ci": "vitest run",
     "test": "vitest"
@@ -33,7 +32,6 @@
     "eslint-plugin-import": "^2.27.5",
     "eslint-plugin-vitest": "^0.2.6",
     "jsdom": "^22.1.0",
-    "np": "*",
     "prettier": "^3.0.0",
     "rollup": "^3.26.2",
     "rollup-plugin-delete": "^2.0.0",

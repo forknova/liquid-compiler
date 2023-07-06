@@ -1,0 +1,27 @@
+# GitHub
+.github
+
+# Rollup
+.rollup.cache
+
+# Source code
+src
+
+# Tests
+test
+
+# Dependency directories
+node_modules/
+npm-debug.log
+
+# TypeScript
+types/
+typings/
+*.tsbuildinfo
+tsconfig.json
+
+# Configs
+.eslintrc.js
+.prettierrc.js
+rollup.config.ts
+vitest.config.js
