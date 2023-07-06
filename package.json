@@ -1,0 +1,54 @@
+{
+  "name": "liquidlite",
+  "description": "Liquid (Lite) is a minimal Shopify Liquid compiler for the browser.",
+  "version": "1.0.0",
+  "main": "./dist/liquid-lite.js",
+  "module": "./dist/liquid-lite.mjs",
+  "types": "./dist/liquid-lite.d.ts",
+  "author": "Ryan Macdonald <hi@ryanmacdonald.ca>",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/patrick-steele-idem/morphdom.git"
+  },
+  "scripts": {
+    "build": "rollup -c rollup.config.ts --configPlugin @rollup/plugin-typescript",
+    "release": "np",
+    "size": "size-limit",
+    "test:ci": "vitest run",
+    "test": "vitest"
+  },
+  "devDependencies": {
+    "@rollup/plugin-commonjs": "^25.0.2",
+    "@rollup/plugin-json": "^6.0.0",
+    "@rollup/plugin-node-resolve": "^15.1.0",
+    "@rollup/plugin-typescript": "^11.1.2",
+    "@size-limit/preset-small-lib": "^8.2.6",
+    "@types/node": "^20.4.0",
+    "@typescript-eslint/eslint-plugin": "^5.61.0",
+    "@typescript-eslint/parser": "^5.61.0",
+    "eslint": "^8.44.0",
+    "eslint-config-prettier": "^8.8.0",
+    "eslint-import-resolver-typescript": "^3.5.5",
+    "eslint-plugin-import": "^2.27.5",
+    "eslint-plugin-vitest": "^0.2.6",
+    "jsdom": "^22.1.0",
+    "np": "*",
+    "prettier": "^3.0.0",
+    "rollup": "^3.26.2",
+    "rollup-plugin-delete": "^2.0.0",
+    "rollup-plugin-dts": "^5.3.0",
+    "size-limit": "^8.2.6",
+    "ts-node": "^10.9.1",
+    "tslib": "^2.6.0",
+    "typescript": "^5.1.6",
+    "vite": "^4.4.1",
+    "vitest": "^0.33.0"
+  },
+  "size-limit": [
+    {
+      "limit": "10 kB",
+      "path": "dist/liquid-lite.js"
+    }
+  ]
+}
