@@ -1,0 +1,25 @@
+name: Test
+
+on:
+  push:
+    branches:
+      - '**'
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: 👉 Checkout repository
+        uses: actions/checkout@v2
+
+      - name: 🛠️ Setup Node
+        uses: actions/setup-node@v3
+        with:
+          node-version: 18
+          cache: 'yarn'
+
+      - name: 🛠️ Install dependencies
+        run: yarn install --frozen-lockfile
+
+      - name: 🧪 Tests
+        run: yarn test:ci
