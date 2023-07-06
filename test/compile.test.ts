@@ -1,11 +1,33 @@
 import {compile} from '@/compile';
-import {Variables} from '@/types';
 
 describe('compile()', () => {
+  it('allows generic type for strict variables', () => {
+    const template = `<p>Hello, {{ person.name }}!</p>`;
+    const variables = {
+      person: {
+        name: 'Ryan',
+        height: 10,
+      },
+      foo: 'bar',
+    };
+
+    interface LiquidContext {
+      person: {
+        name: string;
+        height: number;
+      };
+      foo: string;
+    }
+
+    const output = compile<LiquidContext>(template, variables);
+
+    expect(output).toBe('<p>Hello, Ryan!</p>');
+  });
+
   describe('processVariables()', () => {
     it('renders a variable', () => {
       const template = `<p>Hello, {{ name }}!</p>`;
-      const variables: Variables = {
+      const variables = {
         name: 'Ryan',
       };
 
@@ -16,7 +38,7 @@ describe('compile()', () => {
 
     it('renders a variable without spaces', () => {
       const template = `<p>Hello, {{name}}!</p>`;
-      const variables: Variables = {
+      const variables = {
         name: 'Ryan',
       };
 
@@ -27,7 +49,7 @@ describe('compile()', () => {
 
     it('renders an object path variable', () => {
       const template = `<p>Hello, {{person.name}}!</p>`;
-      const variables: Variables = {
+      const variables = {
         person: {
           name: 'Ryan',
         },
@@ -40,7 +62,7 @@ describe('compile()', () => {
 
     it("throws if the path isn't in object", () => {
       const template = `<p>Hello, {{person.weight}}!</p>`;
-      const variables: Variables = {
+      const variables = {
         person: {
           name: 'Ryan',
         },
@@ -62,7 +84,7 @@ describe('compile()', () => {
 </div>
     `;
 
-      const variables: Variables = {
+      const variables = {
         x: 15,
         name: 'Alice',
       };
@@ -86,7 +108,7 @@ describe('compile()', () => {
 </div>
     `;
 
-      const variables: Variables = {
+      const variables = {
         x: 15,
         name: 'Alice',
       };
@@ -112,7 +134,7 @@ describe('compile()', () => {
 </div>
     `;
 
-      const variables: Variables = {
+      const variables = {
         x: 15,
         name: 'Alice',
       };
@@ -138,7 +160,7 @@ describe('compile()', () => {
 </div>
     `;
 
-      const variables: Variables = {
+      const variables = {
         variant: {
           price: 1500,
         },

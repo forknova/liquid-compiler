@@ -1,19 +1,22 @@
-export type VariableValue =
+export type Variables<Context = unknown> = {
+  [Key in keyof Context]: VariableValue<Context, Key>;
+};
+
+export type VariableValue<Context, Key extends keyof Context> =
+  | string
   | boolean
   | number
-  | string
-  | {[key: string]: VariableValue};
-
-export type Variables = {
-  [key: string]: VariableValue;
-};
+  | Context[Key];
 
 const openingIfStatementLength = 6; // Length of the open tag "{% if "
 const elseStatementLength = 10; // Length of the open tag "{% else %}"
 const endIfStatementLength = 11; // Length of the open tag "{% endif %}"
 const closingTagLength = 2; // Length of the closing tag "%}"
 
-export function compile(template: string, variables: Variables): string {
+export function compile<Context>(
+  template: string,
+  variables: Variables<Context>,
+): string {
   const lines = template.split('\n');
   const outputLines: string[] = [];
   const controlFlowStack: boolean[] = [];
@@ -27,9 +30,9 @@ export function compile(template: string, variables: Variables): string {
   return outputLines.join('\n').trim();
 }
 
-function processLine(
+function processLine<Context>(
   line: string,
-  variables: Variables,
+  variables: Variables<Context>,
   controlFlowStack: boolean[],
 ): string {
   line = processControlFlow(line, variables, controlFlowStack);
@@ -41,26 +44,29 @@ function processLine(
   return line;
 }
 
-function processVariables(line: string, variables: Variables): string {
+function processVariables<Context>(
+  line: string,
+  variables: Variables<Context>,
+): string {
   const regex = /{{(.*?)}}/g;
 
   return line.replace(regex, (_match, variable) => {
     const value = evaluateVariable(variable.trim(), variables);
-    return value.toString();
+    return value ? value.toString() : '';
   });
 }
 
-function evaluateVariable(
-  variable: string,
-  variables: Variables,
-): object | boolean | string | number {
-  const parts = variable.split('.');
-  const value = parts.reduce<VariableValue>((acc, part) => {
-    if (typeof acc === 'object' && part in acc) {
-      return acc[part];
+function evaluateVariable<Context>(
+  variable: keyof Context,
+  variables: Variables<Context>,
+): null | object | boolean | string | number {
+  const parts = variable.toString().split('.');
+  const value = parts.reduce<unknown>((acc, part) => {
+    if (acc && typeof acc === 'object' && part in acc) {
+      return (acc as {[key: string]: unknown})[part];
     } else {
       throw new TypeError(
-        `object path "${variable}" must be defined in variables`,
+        `object path "${variable.toString()}" must be defined in variables`,
       );
     }
   }, variables);
@@ -69,8 +75,8 @@ function evaluateVariable(
 }
 
 function coerceVariableValue(
-  value: object | boolean | string | number,
-): object | boolean | string | number {
+  value: null | object | boolean | string | number,
+): null | object | boolean | string | number {
   if (typeof value === 'string') {
     if (isStringNumber(value)) {
       return parseFloat(value);
@@ -84,9 +90,9 @@ function coerceVariableValue(
   return value;
 }
 
-function processControlFlow(
+function processControlFlow<Context>(
   line: string,
-  variables: Variables,
+  variables: Variables<Context>,
   controlFlowStack: boolean[],
 ): string {
   const processedChars: string[] = [];
@@ -153,15 +159,18 @@ function processControlFlow(
   return processedChars.join('');
 }
 
-function evaluateCondition(condition: string, variables: Variables): boolean {
+function evaluateCondition<Context>(
+  condition: string,
+  variables: Variables<Context>,
+): boolean {
   const parts = condition.split(' ');
   const left = isLiteral(parts[0])
     ? evaluateLiteral(parts[0])
-    : evaluateVariable(parts[0], variables);
+    : evaluateVariable(parts[0] as keyof Context, variables);
   const operator = parts[1];
   const right = isLiteral(parts[2])
     ? evaluateLiteral(parts[2])
-    : evaluateVariable(parts[2], variables);
+    : evaluateVariable(parts[2] as keyof Context, variables);
 
   switch (operator) {
     case '==':
@@ -169,13 +178,13 @@ function evaluateCondition(condition: string, variables: Variables): boolean {
     case '!=':
       return left != right;
     case '>':
-      return left > right;
+      return Boolean(left && right && left > right);
     case '>=':
-      return left >= right;
+      return Boolean(left && right && left >= right);
     case '<':
-      return left < right;
+      return Boolean(left && right && left < right);
     case '<=':
-      return left <= right;
+      return Boolean(left && right && left <= right);
     default:
       return false;
   }

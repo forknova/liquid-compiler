@@ -1,2 +1,1 @@
-export type {VariableValue, Variables} from './types';
-export {compile} from './compile';
+export {compile, VariableValue, Variables} from './compile';

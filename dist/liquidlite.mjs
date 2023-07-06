@@ -24,17 +24,17 @@ function processVariables(line, variables) {
     const regex = /{{(.*?)}}/g;
     return line.replace(regex, (_match, variable) => {
         const value = evaluateVariable(variable.trim(), variables);
-        return value.toString();
+        return value ? value.toString() : '';
     });
 }
 function evaluateVariable(variable, variables) {
-    const parts = variable.split('.');
+    const parts = variable.toString().split('.');
     const value = parts.reduce((acc, part) => {
-        if (typeof acc === 'object' && part in acc) {
+        if (acc && typeof acc === 'object' && part in acc) {
             return acc[part];
         }
         else {
-            throw new TypeError(`object path "${variable}" must be defined in variables`);
+            throw new TypeError(`object path "${variable.toString()}" must be defined in variables`);
         }
     }, variables);
     return value === undefined ? '' : coerceVariableValue(value);
@@ -122,13 +122,13 @@ function evaluateCondition(condition, variables) {
         case '!=':
             return left != right;
         case '>':
-            return left > right;
+            return Boolean(left && right && left > right);
         case '>=':
-            return left >= right;
+            return Boolean(left && right && left >= right);
         case '<':
-            return left < right;
+            return Boolean(left && right && left < right);
         case '<=':
-            return left <= right;
+            return Boolean(left && right && left <= right);
         default:
             return false;
     }
