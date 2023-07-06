@@ -6,13 +6,13 @@ Liquid (Lite) is a minimal Shopify Liquid compiler for the browser.
 
 ```bash
 # for npm
-npm install liquid-lite
+npm install liquidlight
 # for yarn
-yarn add liquid-lite
+yarn add liquidlight
 ```
 
 ```js
-import {compile} from 'liquid-lite';
+import {compile} from 'liquidlight';
 
 const template = `<p>Hi, my name is {{ name }}.</p>`;
 const variables = {name: 'Ryan'};
@@ -47,7 +47,7 @@ export function compile(template, context) {
 
 It's not the best, but it was largely working for what I needed.
 
-It finally got to a point where I need some control flow statements. And there you have it, `liquid-lite`.
+It finally got to a point where I need some control flow statements. And there you have it, `liquidlight`.
 
 ## Supported features
 

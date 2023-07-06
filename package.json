@@ -2,9 +2,9 @@
   "name": "liquidlite",
   "description": "Liquid (Lite) is a minimal Shopify Liquid compiler for the browser.",
   "version": "1.0.0",
-  "main": "./dist/liquid-lite.js",
-  "module": "./dist/liquid-lite.mjs",
-  "types": "./dist/liquid-lite.d.ts",
+  "main": "./dist/liquidlight.js",
+  "module": "./dist/liquidlight.mjs",
+  "types": "./dist/liquidlight.d.ts",
   "author": "Ryan Macdonald <hi@ryanmacdonald.ca>",
   "license": "MIT",
   "repository": {
@@ -48,7 +48,7 @@
   "size-limit": [
     {
       "limit": "10 kB",
-      "path": "dist/liquid-lite.js"
+      "path": "dist/liquidlight.js"
     }
   ]
 }
