@@ -1,5 +1,7 @@
 # 💧 Liquid (Lite)
 
+![tests](https://github.com/macdonaldr93/liquidlite/actions/workflows/test.yml/badge.svg)
+
 Liquid (Lite) is a minimal Shopify Liquid compiler for the browser.
 
 ## Getting started
