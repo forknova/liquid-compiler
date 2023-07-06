@@ -1,15 +1,15 @@
 {
-  "name": "liquidlite",
+  "name": "@bloombug/liquidlite",
   "description": "Liquid (Lite) is a minimal Shopify Liquid compiler for the browser.",
   "version": "1.0.0",
-  "main": "./dist/liquidlight.js",
-  "module": "./dist/liquidlight.mjs",
-  "types": "./dist/liquidlight.d.ts",
+  "main": "./dist/liquidlite.js",
+  "module": "./dist/liquidlite.mjs",
+  "types": "./dist/liquidlite.d.ts",
   "author": "Ryan Macdonald <hi@ryanmacdonald.ca>",
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "https://github.com/patrick-steele-idem/morphdom.git"
+    "url": "https://github.com/macdonaldr93/liquidlite.git"
   },
   "scripts": {
     "build": "rollup -c rollup.config.ts --configPlugin @rollup/plugin-typescript",
@@ -46,7 +46,7 @@
   "size-limit": [
     {
       "limit": "10 kB",
-      "path": "dist/liquidlight.js"
+      "path": "dist/liquidlite.js"
     }
   ]
 }

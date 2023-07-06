@@ -1,5 +1,3 @@
-'use strict';
-
 const openingIfStatementLength = 6; // Length of the open tag "{% if "
 const elseStatementLength = 10; // Length of the open tag "{% else %}"
 const endIfStatementLength = 11; // Length of the open tag "{% endif %}"
@@ -167,5 +165,5 @@ function isStringNumber(value) {
     return Boolean(parseFloat(value));
 }
 
-exports.compile = compile;
-//# sourceMappingURL=liquidlight.js.map
+export { compile };
+//# sourceMappingURL=liquidlite.mjs.map
