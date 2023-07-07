@@ -75,7 +75,7 @@ describe('compile()', () => {
   });
 
   describe('processControlFlow()', () => {
-    it('renders content when the condition is true', () => {
+    it('renders content when the if condition is true', () => {
       const template = `<div>
 {% if x > 10 %}
   <h1>The value of x is {{ x }}.</h1>
@@ -123,13 +123,31 @@ describe('compile()', () => {
 </div>`);
     });
 
-    it('renders the else content when the condition is false', () => {
+    it('renders content when the inline if condition is true', () => {
       const template = `<div>
-{% if x < 10 %}
-  <h1>The value of x is {{ x }}.</h1>
-{% else %}
-  <h1>The value of x is not {{ x }}.</h1>
-{% endif %}
+{% if x > 10 %}<h1>The value of x is {{ x }}.</h1>{% endif %}
+<p>Hello, {{ name }}!</p>
+</div>
+    `;
+
+      const variables = {
+        x: 15,
+        name: 'Alice',
+      };
+
+      const output = compile(template, variables);
+
+      expect(output).toBe(
+        '<div>\n' +
+          '<h1>The value of x is 15.</h1>\n' +
+          '<p>Hello, Alice!</p>\n' +
+          '</div>',
+      );
+    });
+
+    it('skips rendering content when the inline condition is false', () => {
+      const template = `<div>
+{% if x < 10 %}<h1>The value of x is {{ x }}.</h1>{% endif %}
   <p>Hello, {{ name }}!</p>
 </div>
     `;
@@ -141,19 +159,62 @@ describe('compile()', () => {
 
       const output = compile(template, variables);
 
+      expect(output).toBe('<div>\n\n' + '  <p>Hello, Alice!</p>\n' + '</div>');
+    });
+
+    it('renders the if flow when the condition is false', () => {
+      const template = `<div>
+{% if x < 10 %}
+  <h1>The value of x is {{ x }}.</h1>
+{% endif %}
+  <p>Hello, {{ name }}!</p>
+</div>
+    `;
+
+      const variables = {
+        x: 5,
+        name: 'Alice',
+      };
+
+      const output = compile(template, variables);
+
       expect(output).toBe(`<div>
 
-
-
-  <h1>The value of x is not 15.</h1>
+  <h1>The value of x is 5.</h1>
 
   <p>Hello, Alice!</p>
 </div>`);
     });
 
-    it('renders content from object path variable when the condition is true', () => {
+    it('renders content when the variable is an object path and the condition is true', () => {
       const template = `<div>
 {% if variant.price > 10 %}
+  <h1>The value of x is {{ variant.price }}.</h1>
+{% endif %}
+<p>Hello, {{ name }}!</p>
+</div>
+    `;
+
+      const variables = {
+        variant: {
+          price: 1500,
+        },
+        name: 'Alice',
+      };
+
+      const output = compile(template, variables);
+
+      expect(output).toBe(`<div>
+
+  <h1>The value of x is 1500.</h1>
+
+<p>Hello, Alice!</p>
+</div>`);
+    });
+
+    it('renders content when the variable is an object path and the condition is false', () => {
+      const template = `<div>
+{% if variant.price < 2000 %}
   <h1>The value of x is {{ variant.price }}.</h1>
 {% endif %}
 <p>Hello, {{ name }}!</p>
