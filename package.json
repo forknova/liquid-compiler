@@ -1,7 +1,7 @@
 {
   "name": "@bloombug/liquidlite",
   "description": "Liquid (Lite) is a minimal Shopify Liquid compiler for the browser.",
-  "version": "1.2.0",
+  "version": "1.2.1",
   "main": "./dist/liquidlite.js",
   "module": "./dist/liquidlite.mjs",
   "types": "./dist/liquidlite.d.ts",
