@@ -14,6 +14,7 @@
   "scripts": {
     "build": "rollup -c rollup.config.ts --configPlugin @rollup/plugin-typescript",
     "size": "size-limit",
+    "test:bench": "vitest bench",
     "test:ci": "vitest run",
     "test": "vitest"
   },
@@ -31,7 +32,9 @@
     "eslint-import-resolver-typescript": "^3.5.5",
     "eslint-plugin-import": "^2.27.5",
     "eslint-plugin-vitest": "^0.2.6",
+    "handlebars": "^4.7.7",
     "jsdom": "^22.1.0",
+    "liquidjs": "^10.8.3",
     "prettier": "^3.0.0",
     "rollup": "^3.26.2",
     "rollup-plugin-delete": "^2.0.0",

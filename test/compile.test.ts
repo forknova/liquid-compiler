@@ -60,7 +60,7 @@ describe('compile()', () => {
       expect(output).toBe('<p>Hello, Ryan!</p>');
     });
 
-    it("throws if the path isn't in object", () => {
+    it("renders nothing if the path isn't in object", () => {
       const template = `<p>Hello, {{person.weight}}!</p>`;
       const variables = {
         person: {
@@ -68,9 +68,9 @@ describe('compile()', () => {
         },
       };
 
-      expect(() => compile(template, variables)).toThrow(
-        'object path "person.weight" must be defined in variables',
-      );
+      const output = compile(template, variables);
+
+      expect(output).toBe('<p>Hello, !</p>');
     });
   });
 

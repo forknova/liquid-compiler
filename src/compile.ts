@@ -8,6 +8,7 @@ export type VariableValue<Context, Key extends keyof Context> =
   | number
   | Context[Key];
 
+const VARIABLE_REGEX = /{{(.*?)}}/g;
 const openingIfStatementLength = 6; // Length of the open tag "{% if "
 const elseStatementLength = 10; // Length of the open tag "{% else %}"
 const endIfStatementLength = 11; // Length of the open tag "{% endif %}"
@@ -35,7 +36,9 @@ function processLine<Context>(
   variables: Variables<Context>,
   controlFlowStack: boolean[],
 ): string {
-  line = processControlFlow(line, variables, controlFlowStack);
+  if (line.includes('{% ') || controlFlowStack.length > 0) {
+    line = processControlFlow(line, variables, controlFlowStack);
+  }
 
   if (line.includes('{{')) {
     line = processVariables(line, variables);
@@ -48,30 +51,41 @@ function processVariables<Context>(
   line: string,
   variables: Variables<Context>,
 ): string {
-  const regex = /{{(.*?)}}/g;
+  const matches = line.match(VARIABLE_REGEX);
 
-  return line.replace(regex, (_match, variable) => {
-    const value = evaluateVariable(variable.trim(), variables);
-    return value ? value.toString() : '';
-  });
+  if (!matches) {
+    return line;
+  }
+
+  for (const match of matches) {
+    const variable = match.slice(closingTagLength, -closingTagLength).trim();
+    const value = evaluateVariable(variable, variables);
+    line = line.replace(match, value ? value.toString() : '');
+  }
+
+  return line;
 }
 
 function evaluateVariable<Context>(
-  variable: keyof Context,
+  variable: string,
   variables: Variables<Context>,
 ): null | object | boolean | string | number {
-  const parts = variable.toString().split('.');
-  const value = parts.reduce<unknown>((acc, part) => {
-    if (acc && typeof acc === 'object' && part in acc) {
-      return (acc as {[key: string]: unknown})[part];
-    } else {
-      throw new TypeError(
-        `object path "${variable.toString()}" must be defined in variables`,
-      );
-    }
-  }, variables);
+  let value;
 
-  return value === undefined ? '' : coerceVariableValue(value);
+  if (variable.includes('.')) {
+    const parts = variable.split('.');
+    value = parts.reduce<unknown>((acc, part) => {
+      if (acc && typeof acc === 'object' && part in acc) {
+        return (acc as {[key: string]: unknown})[part];
+      } else {
+        return '';
+      }
+    }, variables);
+  } else {
+    value = (variables as {[key: string]: unknown})[variable];
+  }
+
+  return value === undefined ? '' : value;
 }
 
 function coerceVariableValue(
@@ -131,7 +145,10 @@ function processControlFlow<Context>(
     const controlFlowLength = controlFlowStack.length;
 
     // Skip to {% else %} or {% endif %} when the result is false
-    if (controlFlowStack[controlFlowLength - 1] === false) {
+    if (
+      controlFlowLength > 0 &&
+      controlFlowStack[controlFlowLength - 1] === false
+    ) {
       const elseIndex = line.indexOf('{% else %}');
       const endIfIndex = line.indexOf('{% endif %}');
 
@@ -166,11 +183,11 @@ function evaluateCondition<Context>(
   const parts = condition.split(' ');
   const left = isLiteral(parts[0])
     ? evaluateLiteral(parts[0])
-    : evaluateVariable(parts[0] as keyof Context, variables);
+    : coerceVariableValue(evaluateVariable(parts[0], variables));
   const operator = parts[1];
   const right = isLiteral(parts[2])
     ? evaluateLiteral(parts[2])
-    : evaluateVariable(parts[2] as keyof Context, variables);
+    : coerceVariableValue(evaluateVariable(parts[2], variables));
 
   switch (operator) {
     case '==':
