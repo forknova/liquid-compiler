@@ -1,6 +1,12 @@
 {
   "name": "@bloombug/liquidlite",
   "description": "Liquid (Lite) is a minimal Shopify Liquid compiler for the browser.",
+  "keywords": [
+    "liquid",
+    "shopify",
+    "template",
+    "html"
+  ],
   "version": "1.2.1",
   "main": "./dist/liquidlite.js",
   "module": "./dist/liquidlite.mjs",
@@ -10,6 +16,9 @@
   "repository": {
     "type": "git",
     "url": "https://github.com/macdonaldr93/liquidlite.git"
+  },
+  "engines": {
+    "node": ">=12"
   },
   "scripts": {
     "build": "rollup -c rollup.config.ts --configPlugin @rollup/plugin-typescript",
