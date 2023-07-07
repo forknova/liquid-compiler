@@ -1,8 +1,7 @@
+const CLOSING_TAG_LENGTH = 2; // Length of the closing tag "%}"
+const END_IF_STATEMENT_LENGTH = 11; // Length of the open tag "{% endif %}"
+const OPENING_IF_STATEMENT_LENGTH = 6; // Length of the open tag "{% if "
 const VARIABLE_REGEX = /{{(.*?)}}/g;
-const openingIfStatementLength = 6; // Length of the open tag "{% if "
-const elseStatementLength = 10; // Length of the open tag "{% else %}"
-const endIfStatementLength = 11; // Length of the open tag "{% endif %}"
-const closingTagLength = 2; // Length of the closing tag "%}"
 function compile(template, variables) {
     const lines = template.split('\n');
     const outputLines = [];
@@ -29,7 +28,9 @@ function processVariables(line, variables) {
         return line;
     }
     for (const match of matches) {
-        const variable = match.slice(closingTagLength, -closingTagLength).trim();
+        const variable = match
+            .slice(CLOSING_TAG_LENGTH, -CLOSING_TAG_LENGTH)
+            .trim();
         const value = evaluateVariable(variable, variables);
         line = line.replace(match, value ? value.toString() : '');
     }
@@ -74,22 +75,40 @@ function processControlFlow(line, variables, controlFlowStack) {
     while (cursor < lineLength) {
         const char = line[cursor];
         if (isOpeningTag(char, line, cursor)) {
-            const closingIndex = line.indexOf('%}', cursor + closingTagLength);
+            const closingIndex = line.indexOf('%}', cursor + CLOSING_TAG_LENGTH);
             if (closingIndex !== -1) {
-                const tag = line.slice(cursor, closingIndex + closingTagLength);
+                const tag = line.slice(cursor, closingIndex + CLOSING_TAG_LENGTH);
                 if (tag.startsWith('{% if ')) {
                     const ifCondition = line
-                        .slice(cursor + openingIfStatementLength, closingIndex)
+                        .slice(cursor + OPENING_IF_STATEMENT_LENGTH, closingIndex)
                         .trim();
                     const ifConditionResult = evaluateCondition(ifCondition, variables);
                     controlFlowStack.push(ifConditionResult);
-                    cursor = closingIndex + closingTagLength;
+                    cursor = closingIndex + CLOSING_TAG_LENGTH;
                     continue;
                 }
                 else if (tag.startsWith('{% elseif ')) ;
+                else if (tag.startsWith('{% else')) {
+                    // Skip to {% endif %} when the result is true
+                    const controlFlowLength = controlFlowStack.length;
+                    if (controlFlowLength > 0 &&
+                        controlFlowStack[controlFlowLength - 1] === true) {
+                        const endIfIndex = line.indexOf('{% endif %}');
+                        if (endIfIndex !== -1) {
+                            controlFlowStack.pop();
+                            cursor = endIfIndex + END_IF_STATEMENT_LENGTH - 1;
+                            continue;
+                        }
+                    }
+                    else {
+                        cursor = closingIndex + CLOSING_TAG_LENGTH;
+                        continue;
+                    }
+                    // TODO: add support for {% elsif x > 10 %}
+                }
                 else if (tag === '{% endif %}') {
                     controlFlowStack.pop();
-                    cursor = closingIndex + closingTagLength;
+                    cursor = closingIndex + CLOSING_TAG_LENGTH;
                     continue;
                 }
             }
@@ -98,15 +117,10 @@ function processControlFlow(line, variables, controlFlowStack) {
         // Skip to {% else %} or {% endif %} when the result is false
         if (controlFlowLength > 0 &&
             controlFlowStack[controlFlowLength - 1] === false) {
-            const elseIndex = line.indexOf('{% else %}');
             const endIfIndex = line.indexOf('{% endif %}');
-            if (elseIndex !== -1) {
+            if (endIfIndex !== -1) {
                 controlFlowStack.pop();
-                cursor = elseIndex + elseStatementLength - 1;
-            }
-            else if (endIfIndex !== -1) {
-                controlFlowStack.pop();
-                cursor = endIfIndex + endIfStatementLength - 1;
+                cursor = endIfIndex + END_IF_STATEMENT_LENGTH - 1;
             }
         }
         else if (controlFlowLength > 0 &&
@@ -174,7 +188,7 @@ function isLiteral(variable) {
     }
 }
 function isOpeningTag(char, line, cursor) {
-    return char === '{' && line.slice(cursor, cursor + closingTagLength) === '{%';
+    return (char === '{' && line.slice(cursor, cursor + CLOSING_TAG_LENGTH) === '{%');
 }
 function isStringNumber(value) {
     return Boolean(parseFloat(value));
