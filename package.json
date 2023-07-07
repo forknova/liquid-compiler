@@ -7,7 +7,7 @@
     "template",
     "html"
   ],
-  "version": "1.2.3",
+  "version": "1.2.4",
   "main": "./dist/liquidlite.js",
   "module": "./dist/liquidlite.mjs",
   "types": "./dist/liquidlite.d.ts",
