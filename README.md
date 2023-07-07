@@ -1,6 +1,6 @@
 # 💧 Liquid (Lite)
 
-![npm bundle size](https://img.shields.io/bundlephobia/minzip/%40bloombug%2Fliquidlite) · ![tests](https://github.com/macdonaldr93/liquidlite/actions/workflows/test.yml/badge.svg)
+![npm bundle size (scoped)](https://img.shields.io/bundlephobia/minzip/%40bloombug/liquidlite) · ![tests](https://github.com/macdonaldr93/liquidlite/actions/workflows/test.yml/badge.svg)
 
 Liquid (Lite) is a minimal Shopify Liquid compiler for the browser.
 
