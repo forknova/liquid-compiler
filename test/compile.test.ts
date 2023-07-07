@@ -99,6 +99,19 @@ describe('compile()', () => {
 </div>`);
     });
 
+    it('renders content when the object is true', () => {
+      const template = `{% if x %}<h1>The value of x is {{ x }}.</h1>{% endif %}`;
+
+      const variables = {
+        x: 15,
+        name: 'Alice',
+      };
+
+      const output = compile(template, variables);
+
+      expect(output).toBe('<h1>The value of x is 15.</h1>');
+    });
+
     it('skips rendering content when the condition is false', () => {
       const template = `<div>
 {% if x < 10 %}
@@ -121,6 +134,19 @@ describe('compile()', () => {
 
   <p>Hello, Alice!</p>
 </div>`);
+    });
+
+    it('skips rendering content when the object is false', () => {
+      const template = `{% if x %}<h1>The value of x is {{ x }}.</h1>{% endif %}`;
+
+      const variables = {
+        x: '',
+        name: 'Alice',
+      };
+
+      const output = compile(template, variables);
+
+      expect(output).toBe('');
     });
 
     it('renders content when the inline if condition is true', () => {
