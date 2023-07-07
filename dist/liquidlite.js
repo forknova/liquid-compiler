@@ -1,5 +1,6 @@
 'use strict';
 
+const VARIABLE_REGEX = /{{(.*?)}}/g;
 const openingIfStatementLength = 6; // Length of the open tag "{% if "
 const elseStatementLength = 10; // Length of the open tag "{% else %}"
 const endIfStatementLength = 11; // Length of the open tag "{% endif %}"
@@ -16,30 +17,43 @@ function compile(template, variables) {
     return outputLines.join('\n').trim();
 }
 function processLine(line, variables, controlFlowStack) {
-    line = processControlFlow(line, variables, controlFlowStack);
+    if (line.includes('{% ') || controlFlowStack.length > 0) {
+        line = processControlFlow(line, variables, controlFlowStack);
+    }
     if (line.includes('{{')) {
         line = processVariables(line, variables);
     }
     return line;
 }
 function processVariables(line, variables) {
-    const regex = /{{(.*?)}}/g;
-    return line.replace(regex, (_match, variable) => {
-        const value = evaluateVariable(variable.trim(), variables);
-        return value ? value.toString() : '';
-    });
+    const matches = line.match(VARIABLE_REGEX);
+    if (!matches) {
+        return line;
+    }
+    for (const match of matches) {
+        const variable = match.slice(closingTagLength, -closingTagLength).trim();
+        const value = evaluateVariable(variable, variables);
+        line = line.replace(match, value ? value.toString() : '');
+    }
+    return line;
 }
 function evaluateVariable(variable, variables) {
-    const parts = variable.toString().split('.');
-    const value = parts.reduce((acc, part) => {
-        if (acc && typeof acc === 'object' && part in acc) {
-            return acc[part];
-        }
-        else {
-            throw new TypeError(`object path "${variable.toString()}" must be defined in variables`);
-        }
-    }, variables);
-    return value === undefined ? '' : coerceVariableValue(value);
+    let value;
+    if (variable.includes('.')) {
+        const parts = variable.split('.');
+        value = parts.reduce((acc, part) => {
+            if (acc && typeof acc === 'object' && part in acc) {
+                return acc[part];
+            }
+            else {
+                return '';
+            }
+        }, variables);
+    }
+    else {
+        value = variables[variable];
+    }
+    return value === undefined ? '' : value;
 }
 function coerceVariableValue(value) {
     if (typeof value === 'string') {
@@ -84,7 +98,8 @@ function processControlFlow(line, variables, controlFlowStack) {
         }
         const controlFlowLength = controlFlowStack.length;
         // Skip to {% else %} or {% endif %} when the result is false
-        if (controlFlowStack[controlFlowLength - 1] === false) {
+        if (controlFlowLength > 0 &&
+            controlFlowStack[controlFlowLength - 1] === false) {
             const elseIndex = line.indexOf('{% else %}');
             const endIfIndex = line.indexOf('{% endif %}');
             if (elseIndex !== -1) {
@@ -113,11 +128,11 @@ function evaluateCondition(condition, variables) {
     const parts = condition.split(' ');
     const left = isLiteral(parts[0])
         ? evaluateLiteral(parts[0])
-        : evaluateVariable(parts[0], variables);
+        : coerceVariableValue(evaluateVariable(parts[0], variables));
     const operator = parts[1];
     const right = isLiteral(parts[2])
         ? evaluateLiteral(parts[2])
-        : evaluateVariable(parts[2], variables);
+        : coerceVariableValue(evaluateVariable(parts[2], variables));
     switch (operator) {
         case '==':
             return left == right;
