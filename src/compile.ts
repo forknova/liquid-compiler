@@ -136,25 +136,7 @@ function processControlFlow<Context>(
         } else if (tag.startsWith('{% elseif ')) {
           // TODO: add support for {% elsif x > 10 %}
         } else if (tag.startsWith('{% else')) {
-          // Skip to {% endif %} when the result is true
-          const controlFlowLength = controlFlowStack.length;
-
-          if (
-            controlFlowLength > 0 &&
-            controlFlowStack[controlFlowLength - 1] === true
-          ) {
-            const endIfIndex = line.indexOf('{% endif %}');
-
-            if (endIfIndex !== -1) {
-              controlFlowStack.pop();
-              cursor = endIfIndex + END_IF_STATEMENT_LENGTH - 1;
-              continue;
-            }
-          } else {
-            cursor = closingIndex + CLOSING_TAG_LENGTH;
-            continue;
-          }
-          // TODO: add support for {% elsif x > 10 %}
+          // TODO: add support for {% else %}
         } else if (tag === '{% endif %}') {
           controlFlowStack.pop();
           cursor = closingIndex + CLOSING_TAG_LENGTH;
