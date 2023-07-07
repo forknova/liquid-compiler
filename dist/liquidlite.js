@@ -140,6 +140,13 @@ function processControlFlow(line, variables, controlFlowStack) {
 }
 function evaluateCondition(condition, variables) {
     const parts = condition.split(' ');
+    // if statement without a condition
+    if (parts.length === 1) {
+        const part = isLiteral(parts[0])
+            ? evaluateLiteral(parts[0])
+            : coerceVariableValue(evaluateVariable(parts[0], variables));
+        return Boolean(part);
+    }
     const left = isLiteral(parts[0])
         ? evaluateLiteral(parts[0])
         : coerceVariableValue(evaluateVariable(parts[0], variables));
