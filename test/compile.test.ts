@@ -112,6 +112,84 @@ describe('compile()', () => {
       expect(output).toBe('<h1>The value of x is 15.</h1>');
     });
 
+    it('renders content for nil when the object is null', () => {
+      const template = `{% if x == nil %}<h1>The value of x is {{ x }}.</h1>{% endif %}`;
+
+      const variables = {
+        x: null,
+        name: 'Alice',
+      };
+
+      const output = compile(template, variables);
+
+      expect(output).toBe('<h1>The value of x is .</h1>');
+    });
+
+    it('renders content for nil when the object is undefined', () => {
+      const template = `{% if x == nil %}<h1>The value of x is {{ x }}.</h1>{% endif %}`;
+
+      const variables = {
+        x: undefined,
+        name: 'Alice',
+      };
+
+      const output = compile(template, variables);
+
+      expect(output).toBe('<h1>The value of x is .</h1>');
+    });
+
+    it('renders content for nil when the object is empty string', () => {
+      const template = `{% if x == nil %}<h1>The value of x is {{ x }}.</h1>{% endif %}`;
+
+      const variables = {
+        x: '',
+        name: 'Alice',
+      };
+
+      const output = compile(template, variables);
+
+      expect(output).toBe('<h1>The value of x is .</h1>');
+    });
+
+    it('renders content for nil when the object is false', () => {
+      const template = `{% if x == nil %}<h1>The value of x is {{ x }}.</h1>{% endif %}`;
+
+      const variables = {
+        x: false,
+        name: 'Alice',
+      };
+
+      const output = compile(template, variables);
+
+      expect(output).toBe('<h1>The value of x is .</h1>');
+    });
+
+    it('skips rendering content for nil when the object is a number', () => {
+      const template = `{% if x == nil %}<h1>The value of x is {{ x }}.</h1>{% endif %}`;
+
+      const variables = {
+        x: 0,
+        name: 'Alice',
+      };
+
+      const output = compile(template, variables);
+
+      expect(output).toBe('');
+    });
+
+    it('skips rendering content for nil when the object is a string', () => {
+      const template = `{% if x == nil %}<h1>The value of x is {{ x }}.</h1>{% endif %}`;
+
+      const variables = {
+        x: '15',
+        name: 'Alice',
+      };
+
+      const output = compile(template, variables);
+
+      expect(output).toBe('');
+    });
+
     it('skips rendering content when the condition is false', () => {
       const template = `<div>
 {% if x < 10 %}
