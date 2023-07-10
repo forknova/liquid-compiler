@@ -22,6 +22,7 @@
   },
   "scripts": {
     "build": "rollup -c rollup.config.ts --configPlugin @rollup/plugin-typescript",
+    "prepare": "npm run build",
     "size": "size-limit",
     "test:bench": "vitest bench",
     "test:ci": "vitest run",
