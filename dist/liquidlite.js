@@ -139,9 +139,9 @@ function evaluateCondition(condition, variables) {
         : coerceVariableValue(evaluateVariable(parts[2], variables));
     switch (operator) {
         case '==':
-            return left == right;
+            return equals(left, right);
         case '!=':
-            return left != right;
+            return !equals(left, right);
         case '>':
             return Boolean(left && right && left > right);
         case '>=':
@@ -164,6 +164,12 @@ function evaluateLiteral(variable) {
     else if (variable === 'false') {
         return false;
     }
+    else if (variable === 'nil') {
+        return null;
+    }
+    else if (variable === 'empty') {
+        return null;
+    }
     else {
         return parseFloat(variable);
     }
@@ -175,6 +181,12 @@ function isLiteral(variable) {
     else if (variable.startsWith('"')) {
         return true;
     }
+    else if (variable === 'nil') {
+        return true;
+    }
+    else if (variable === 'empty') {
+        return true;
+    }
     else {
         return false;
     }
@@ -184,6 +196,23 @@ function isOpeningTag(char, line, cursor) {
 }
 function isStringNumber(value) {
     return Boolean(parseFloat(value));
+}
+function equals(left, right) {
+    if (left === null) {
+        return compareNull(right);
+    }
+    if (right === null) {
+        return compareNull(left);
+    }
+    return left == right;
+}
+function compareNull(value) {
+    return (value === null ||
+        value === undefined ||
+        value === false ||
+        value === '' ||
+        (Array.isArray(value) && value.length === 0) ||
+        (typeof value === 'object' && Object.keys(value).length === 0));
 }
 
 exports.compile = compile;
